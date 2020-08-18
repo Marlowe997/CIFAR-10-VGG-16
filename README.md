@@ -1,2 +1,72 @@
-# CIFAR-10-VGG-16
-通过VGG-16的变体神经网络实现CIFAR-10数据集的识别 识别准确率83%
+简单分类模型的设计与实现
+
+代码地址
+
+https://github.com/Marlowe997/ML_Base
+
+测试数据集
+
+CIFAR-10
+
+通过torchvision.datasets、torch.utils.data.DataLoader这两个包来加载
+
+
+
+神经网络定义
+
+网络模型如下：
+
+    self.conv1 = nn.Conv2d(3,64,3,padding=1)
+    self.conv2 = nn.Conv2d(64,64,3,padding=1)
+    self.pool1 = nn.MaxPool2d(2, 2)
+    self.bn1 = nn.BatchNorm2d(64)
+    self.relu1 = nn.LeakyReLU()
+    
+    self.conv3 = nn.Conv2d(64,128,3,padding=1)
+    self.pool2 = nn.MaxPool2d(2, 2, padding=1)
+    self.bn2 = nn.BatchNorm2d(128)
+    self.relu2 = nn.LeakyReLU()
+    
+    self.conv4 = nn.Conv2d(128,128, 3,padding=1)
+    self.conv5 = nn.Conv2d(128,128, 1,padding=1)
+    self.pool3 = nn.MaxPool2d(2, 2, padding=1)
+    self.bn3 = nn.BatchNorm2d(128)
+    self.relu3 = nn.LeakyReLU()
+    
+    self.conv6 = nn.Conv2d(128, 256, 3,padding=1)
+    self.conv7 = nn.Conv2d(256, 256, 1, padding=1)
+    self.pool4 = nn.MaxPool2d(2, 2, padding=1)
+    self.bn4 = nn.BatchNorm2d(256)
+    self.relu4 = nn.LeakyReLU()
+    
+    self.conv8 = nn.Conv2d(256, 512, 3, padding=1)
+    self.conv9 = nn.Conv2d(512, 512, 1, padding=1)
+    self.pool5 = nn.MaxPool2d(2, 2, padding=1)
+    self.bn5 = nn.BatchNorm2d(512)
+    self.relu5 = nn.LeakyReLU()
+    
+    self.fc14 = nn.Linear(512*4*4,1024)
+    self.drop1 = nn.Dropout2d()
+    self.fc15 = nn.Linear(1024,1024)
+    self.drop2 = nn.Dropout2d()
+    self.fc16 = nn.Linear(1024,10)
+
+loss函数： CrossEntropyLoss
+
+optimizer: Adam
+
+设计思路：
+
+	目前图像分类方面效果较好的网络主要有VGG-16和ResNet，其识别准确率普遍达到93%以上。在进行了一定的调研后，笔者对两种网络都进行了基本的测试，并最终决定选用目前的网络。本神经网络基于VGG-16，并对其进行了一定的改进。由于VGG-16在个人PC端运行时存在内存不足等问题，故在一定程度上减少了卷积核的数量，并对其结构进行了一定的改进。
+
+	为了解决梯度爆炸和梯度消失的问题，激活函数采用了LeakyRelu，在一定程度上避免了以上问题的出现，同时也采取了一定的Dropout操作。优化方面采用了Adam作为optimizer，相对而言计算更加简单且高效，参数的变换不会受到梯度的伸缩变换影响，更新的步长也被限制在大致的范围内并能自然地实现步长退火过程。
+
+运行结果
+
+
+
+reference
+
+github cs231n笔记
+
+用 PyTorch 从零创建 CIFAR-10 的图像分类器神经网络，并将测试准确率达到 85%
